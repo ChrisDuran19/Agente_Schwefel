@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Cristian David Duran">
+    <meta name="description" content="Simulador avanzado de interacción Agente-Ambiente para análisis y optimización de decisiones">
+    <title>Interacción Agente-Ambiente | Simulador Pro</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/static/img/favicon.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/static/img/favicon.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/static/img/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io/client-dist/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <div class="logo-animation">
+                    <img src="/static/img/logo.png" alt="Logo" class="app-logo">
+                </div>
+                <h1>Interacción Agente-Ambiente <span class="pro-badge">Pro</span></h1>
+            </div>
+            <div class="header-actions">
+                <!-- Centro de notificaciones -->
+                <div class="notification-center">
+                    <button id="notificationButton" class="notification-button" aria-label="Centro de notificaciones">
+                        <i class="fas fa-bell"></i>
+                        <span id="notificationCount" class="notification-count hidden">0</span>
+                    </button>
+                    <div id="notificationPanel" class="notification-panel hidden">
+                        <div class="notification-header">
+                            <h3>Centro de Notificaciones</h3>
+                            <div class="notification-tabs">
+                                <button class="notification-tab active" data-tab="all">Todas</button>
+                                <button class="notification-tab" data-tab="success">Éxitos</button>
+                                <button class="notification-tab" data-tab="error">Errores</button>
+                                <button class="notification-tab" data-tab="info">Info</button>
+                            </div>
+                            <button id="clearNotifications" class="clear-notifications">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                        <div class="notification-list-container">
+                            <div id="notificationList" class="notification-list"></div>
+                            <div class="empty-notifications hidden">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No hay notificaciones</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contador de usuarios conectados -->
+                <div class="live-users-counter">
+                    <i class="fas fa-users"></i>
+                    <span id="usersOnline">0</span> usuarios en línea
+                </div>
+                
+                <!-- Theme Toggle -->
+                <div class="theme-toggle">
+                    <button id="themeToggle" class="theme-toggle-btn" aria-label="Cambiar tema">
+                        <i class="fas fa-sun sun-icon"></i>
+                        <i class="fas fa-moon moon-icon"></i>
+                    </button>
+                </div>
+                
+                <div class="developer-info">
+                    <p>Desarrollado por: <strong>Cristian David Duran</strong></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- Panel de Control -->
+        <div class="control-section">
+            <div class="actions-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-sliders-h"></i> Panel de Control</h2>
+                    <div class="action-controls-header">
+                        <button id="expandAllActions" class="expand-button" title="Expandir todos los controles">
+                            <i class="fas fa-angle-double-down"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Acción 1 -->
+                <div class="action-control">
+                    <div class="action-header">
+                        <div class="action-title">
+                            <i class="fas fa-project-diagram"></i>
+                            <label for="accion1Value">Acción 1</label>
+                        </div>
+                        <input type="text" 
+                               id="accion1Value" 
+                               class="value-input" 
+                               step="0.000000000000000001"
+                               min="-100"
+                               max="100">
+                    </div>
+                    <div class="slider-container modern-slider">
+                        <span class="limit-label">-100</span>
+                        <div class="slider-track">
+                            <div class="slider-progress" id="progress1"></div>
+                            <input type="range" 
+                                   id="accion1"
+                                   class="action-slider"
+                                   min="-100"
+                                   max="100"
+                                   step="0.000000000000000001">
+                            <div class="slider-ticks">
+                                <span class="tick" style="left: 0%"></span>
+                                <span class="tick" style="left: 25%"></span>
+                                <span class="tick" style="left: 50%"></span>
+                                <span class="tick" style="left: 75%"></span>
+                                <span class="tick" style="left: 100%"></span>
+                            </div>
+                        </div>
+                        <span class="limit-label">+100</span>
+                    </div>
+                </div>
+
+                <!-- Acción 2 -->
+                <div class="action-control">
+                    <div class="action-header">
+                        <div class="action-title">
+                            <i class="fas fa-bezier-curve"></i>
+                            <label for="accion2Value">Acción 2</label>
+                        </div>
+                        <input type="text" 
+                               id="accion2Value" 
+                               class="value-input" 
+                               step="0.000000000000000001"
+                               min="-100"
+                               max="100">
+                    </div>
+                    <div class="slider-container modern-slider">
+                        <span class="limit-label">-100</span>
+                        <div class="slider-track">
+                            <div class="slider-progress" id="progress2"></div>
+                            <input type="range" 
+                                   id="accion2"
+                                   class="action-slider"
+                                   min="-100"
+                                   max="100"
+                                   step="0.000000000000000001">
+                            <div class="slider-ticks">
+                                <span class="tick" style="left: 0%"></span>
+                                <span class="tick" style="left: 25%"></span>
+                                <span class="tick" style="left: 50%"></span>
+                                <span class="tick" style="left: 75%"></span>
+                                <span class="tick" style="left: 100%"></span>
+                            </div>
+                        </div>
+                        <span class="limit-label">+100</span>
+                    </div>
+                </div>
+
+                <!-- Acción 3 -->
+                <div class="action-control">
+                    <div class="action-header">
+                        <div class="action-title">
+                            <i class="fas fa-sitemap"></i>
+                            <label for="accion3Value">Acción 3</label>
+                        </div>
+                        <input type="text" 
+                               id="accion3Value" 
+                               class="value-input" 
+                               step="0.000000000000000001"
+                               min="-100"
+                               max="100">
+                    </div>
+                    <div class="slider-container modern-slider">
+                        <span class="limit-label">-100</span>
+                        <div class="slider-track">
+                            <div class="slider-progress" id="progress3"></div>
+                            <input type="range" 
+                                   id="accion3"
+                                   class="action-slider"
+                                   min="-100"
+                                   max="100"
+                                   step="0.000000000000000001">
+                            <div class="slider-ticks">
+                                <span class="tick" style="left: 0%"></span>
+                                <span class="tick" style="left: 25%"></span>
+                                <span class="tick" style="left: 50%"></span>
+                                <span class="tick" style="left: 75%"></span>
+                                <span class="tick" style="left: 100%"></span>
+                            </div>
+                        </div>
+                        <span class="limit-label">+100</span>
+                    </div>
+                </div>
+
+                <!-- Acción 4 -->
+                <div class="action-control">
+                    <div class="action-header">
+                        <div class="action-title">
+                            <i class="fas fa-network-wired"></i>
+                            <label for="accion4Value">Acción 4</label>
+                        </div>
+                        <input type="text" 
+                               id="accion4Value" 
+                               class="value-input" 
+                               step="0.000000000000000001"
+                               min="-100"
+                               max="100">
+                    </div>
+                    <div class="slider-container modern-slider">
+                        <span class="limit-label">-100</span>
+                        <div class="slider-track">
+                            <div class="slider-progress" id="progress4"></div>
+                            <input type="range" 
+                                   id="accion4"
+                                   class="action-slider"
+                                   min="-100"
+                                   max="100"
+                                   step="0.000000000000000001">
+                            <div class="slider-ticks">
+                                <span class="tick" style="left: 0%"></span>
+                                <span class="tick" style="left: 25%"></span>
+                                <span class="tick" style="left: 50%"></span>
+                                <span class="tick" style="left: 75%"></span>
+                                <span class="tick" style="left: 100%"></span>
+                            </div>
+                        </div>
+                        <span class="limit-label">+100</span>
+                    </div>
+                </div>
+
+                <!-- Percepción -->
+                <div class="perception-container">
+                    <div class="perception-header">
+                        <i class="fas fa-eye"></i>
+                        <label for="perception">Percepción:</label>
+                    </div>
+                    <div class="perception-display">
+                        <input type="text" id="perception" class="perception-value" readonly>
+                        <div class="perception-meter">
+                            <div id="perceptionBar" class="perception-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Control -->
+                <div class="control-buttons">
+                    <button id="enviar" class="primary-button pulse-animation">
+                        <i class="fas fa-robot"></i>
+                        Recomendar Acciones
+                    </button>
+                    <button id="showStats" class="secondary-button">
+                        <i class="fas fa-chart-bar"></i>
+                        Mostrar Estadísticas
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- Panel de Estadísticas -->
+            <div id="statisticsContainer" class="statistics-panel hidden">
+                <div class="panel-header">
+                    <h2><i class="fas fa-chart-line"></i> Estadísticas de Percepción</h2>
+                    <button id="closeStats" class="close-button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Máxima</h3>
+                        <div id="maxPerception" class="stat-value">0.00</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Mínima</h3>
+                        <div id="minPerception" class="stat-value">0.00</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Promedio</h3>
+                        <div id="avgPerception" class="stat-value">0.00</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-equals"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Ensayos</h3>
+                        <div id="totalTrials" class="stat-value">0</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-summary">
+                    <div class="summary-chart-container">
+                        <canvas id="statsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Visualización -->
+        <div class="visualization-section">
+            <!-- Gráfico -->
+            <div class="chart-container">
+                <div class="panel-header">
+                    <h2><i class="fas fa-history"></i> Historial de Percepciones</h2>
+                    <div class="chart-controls">
+                        <select id="timeFrame" class="time-frame-select">
+                            <option value="all">Todo el historial</option>
+                            <option value="10m">Últimos 10 minutos</option>
+                            <option value="30m">Últimos 30 minutos</option>
+                            <option value="1h">Última hora</option>
+                            <option value="2h">Últimas 2 horas</option>
+                        </select>
+                        <button id="downloadData" class="tool-button" title="Descargar datos">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button id="fullscreenChart" class="tool-button" title="Pantalla completa">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="perceptionChart"></canvas>
+                </div>
+                <div class="real-time-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>Datos en tiempo real</span>
+                </div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="recommendations-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-lightbulb"></i> Recomendaciones</h2>
+                    <div class="recommendation-filters">
+                        <select id="recommendationFilter" class="recommendation-filter">
+                            <option value="all">Todas</option>
+                            <option value="own">Mis recomendaciones</option>
+                            <option value="others">De otros usuarios</option>
+                        </select>
+                        <button id="clearHistory" class="tool-button" title="Limpiar historial">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="history-list" class="recommendations-list"></div>
+                <div id="emptyRecommendations" class="empty-recommendations hidden">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>No hay recomendaciones guardadas</p>
+                    <p class="empty-recommendation-hint">Ajusta los valores y haz clic en "Recomendar Acciones"</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sessión de usuarios en línea modal -->
+    <div id="usersModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-users"></i> Usuarios en línea</h2>
+                <button id="closeUsersModal" class="close-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="users-stats">
+                    <div class="user-stat-card">
+                        <h3>Actual</h3>
+                        <div id="currentUsers" class="user-stat-value">0</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                    </div>
+                    <div class="user-stat-card">
+                        <h3>Hoy</h3>
+                        <div id="todayUsers" class="user-stat-value">0</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                    </div>
+                    <div class="user-stat-card">
+                        <h3>Total</h3>
+                        <div id="totalUsers" class="user-stat-value">0</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="users-chart-container">
+                    <canvas id="usersChart"></canvas>
+                </div>
+                <div class="live-activity">
+                    <h3>Actividad reciente</h3>
+                    <ul id="userActivity" class="activity-list"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tutorial -->
+    <div id="tutorialOverlay" class="tutorial-overlay hidden">
+        <div class="tutorial-content">
+            <h2><i class="fas fa-graduation-cap"></i> ¡Bienvenido al Simulador!</h2>
+            <p id="tutorialMessage"></p>
+            <div class="tutorial-progress">
+                <div id="tutorialProgressBar" class="progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="tutorial-buttons">
+                <button id="prevBtn" class="secondary-button">
+                    <i class="fas fa-arrow-left"></i> Anterior
+                </button>
+                <button id="nextBtn" class="primary-button">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+                <button id="skipBtn" class="tertiary-button">
+                    Saltar <i class="fas fa-forward"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notificaciones (temporal) -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <p class="copyright">&copy; 2024 Simulador de Percepción</p>
+                <p class="version">Versión 3.0</p>
+            </div>
+            <div class="footer-section">
+                <button id="showUsersStats" class="users-stats-button">
+                    <i class="fas fa-users"></i> <span id="footerUsersCount">0</span> usuarios en línea
+                </button>
+            </div>
+            <div class="footer-section">
+                <p class="developer">Desarrollado por <strong>Cristian David Duran</strong></p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="GitHub" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="LinkedIn" target="_blank">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link" aria-label="Twitter" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/users-counter.js"></script>
+</body>
+</html>

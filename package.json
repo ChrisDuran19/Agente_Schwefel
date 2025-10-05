@@ -1,0 +1,28 @@
+{
+  "name": "semillero-cunplexity",
+  "version": "1.0.0",
+  "description": "Agente_Schwefel",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botui": "^1.1.3",
+    "chart": "^0.1.2",
+    "compression": "^1.8.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.11.4",
+    "socket.io": "^4.8.1",
+    "tailwindcss": "^3.4.15",
+    "websocket": "^1.0.35",
+    "ws": "^8.18.0"
+  }
+}

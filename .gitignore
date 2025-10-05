@@ -1,0 +1,12 @@
+node_modules/
+.vscode/
+*.log
+.env
+.env.local
+.env.production
+*.pem
+*.key
+.DS_Store
+Thumbs.db
+dist/
+build/
